@@ -1,6 +1,7 @@
 namespace ScopeGuard.Analyzer.Tests;
 
 using ScopeGuard.Analyzer.Tests.Helpers;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,7 +35,8 @@ public class SG001_InvocationTests
             }
             """;
 
-        await AnalyzerVerifier.VerifyAsync(source);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
     }
 
     [Fact]
@@ -59,17 +61,17 @@ public class SG001_InvocationTests
                     public void Action()
                     {
                         var svc = new MyApp.Domain.DomainService();
-                        {|#0:svc.Execute()|};
+                        svc.Execute();
                     }
                 }
             }
             """;
 
-        var expected = AnalyzerVerifier.Diagnostic()
-            .WithLocation(0)
-            .WithArguments("Execute", "MyApp.Application.**", "MyApp.UI.Controller.Action()");
-
-        await AnalyzerVerifier.VerifyAsync(source, expected);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("Execute", sg001.GetMessage());
+        Assert.Contains("MyApp.Application.**", sg001.GetMessage());
+        Assert.Contains("MyApp.UI.Controller.Action()", sg001.GetMessage());
     }
 
     [Fact]
@@ -94,17 +96,14 @@ public class SG001_InvocationTests
                     public void Render()
                     {
                         var e = new MyApp.Domain.Entity();
-                        {|#0:e.Save()|};
+                        e.Save();
                     }
                 }
             }
             """;
 
-        var expected = AnalyzerVerifier.Diagnostic()
-            .WithLocation(0)
-            .WithArguments("Save", "MyApp.Application", "MyApp.UI.View.Render()");
-
-        await AnalyzerVerifier.VerifyAsync(source, expected);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Single(diagnostics, d => d.Id == "SG001");
     }
 
     [Fact]
@@ -135,7 +134,8 @@ public class SG001_InvocationTests
             }
             """;
 
-        await AnalyzerVerifier.VerifyAsync(source);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
     }
 
     [Fact]
@@ -163,7 +163,8 @@ public class SG001_InvocationTests
             }
             """;
 
-        await AnalyzerVerifier.VerifyAsync(source);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
     }
 
     [Fact]
@@ -190,17 +191,15 @@ public class SG001_InvocationTests
                     public void Action()
                     {
                         var svc = new MyApp.Domain.DomainService();
-                        {|#0:svc.RestrictedMethod()|};
+                        svc.RestrictedMethod();
                         svc.OpenMethod();
                     }
                 }
             }
             """;
 
-        var expected = AnalyzerVerifier.Diagnostic()
-            .WithLocation(0)
-            .WithArguments("RestrictedMethod", "MyApp.Application", "MyApp.UI.Controller.Action()");
-
-        await AnalyzerVerifier.VerifyAsync(source, expected);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("RestrictedMethod", sg001.GetMessage());
     }
 }

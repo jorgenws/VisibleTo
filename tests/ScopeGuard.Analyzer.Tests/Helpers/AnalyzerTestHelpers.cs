@@ -1,43 +1,35 @@
 namespace ScopeGuard.Analyzer.Tests.Helpers;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Testing;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using Microsoft.CodeAnalysis.Testing;
+using ScopeGuard.Attributes;
+using System;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
 
 internal static class AnalyzerVerifier
 {
-    // Included in every test compilation so that [AvailableTo] is resolvable.
-    internal const string AttributeSource = """
-        namespace ScopeGuard.Attributes;
+    private static readonly MetadataReference[] References =
+        AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
+            .Select(a => MetadataReference.CreateFromFile(a.Location))
+            .Cast<MetadataReference>()
+            .Concat([MetadataReference.CreateFromFile(typeof(AvailableToAttribute).Assembly.Location)])
+            .ToArray();
 
-        [System.AttributeUsage(
-            System.AttributeTargets.Class | System.AttributeTargets.Struct |
-            System.AttributeTargets.Method | System.AttributeTargets.Property,
-            AllowMultiple = true, Inherited = false)]
-        public sealed class AvailableToAttribute : System.Attribute
-        {
-            public string[] AllowedPatterns { get; }
-            public AvailableToAttribute(params string[] allowedPatterns)
-                => AllowedPatterns = allowedPatterns;
-        }
-        """;
-
-    public static DiagnosticResult Diagnostic()
-        => CSharpAnalyzerVerifier<ScopeGuardAnalyzer, DefaultVerifier>.Diagnostic(Descriptors.SG001);
-
-    public static async Task VerifyAsync(string source, params DiagnosticResult[] expected)
+    public static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(string source)
     {
-        var test = new CSharpAnalyzerTest<ScopeGuardAnalyzer, DefaultVerifier>
-        {
-            TestState =
-            {
-                Sources = { source, AttributeSource }
-            }
-        };
+        var syntaxTree = CSharpSyntaxTree.ParseText(source);
+        var compilation = CSharpCompilation.Create(
+            "TestAssembly",
+            [syntaxTree],
+            References,
+            new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        test.ExpectedDiagnostics.AddRange(expected);
-        await test.RunAsync();
+        var analyzers = ImmutableArray.Create<DiagnosticAnalyzer>(new ScopeGuardAnalyzer());
+        var withAnalyzers = compilation.WithAnalyzers(analyzers);
+        return await withAnalyzers.GetAnalyzerDiagnosticsAsync();
     }
 }

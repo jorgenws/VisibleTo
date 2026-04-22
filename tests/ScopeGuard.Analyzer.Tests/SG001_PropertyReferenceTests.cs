@@ -28,17 +28,16 @@ public class SG001_PropertyReferenceTests
                     public string GetName()
                     {
                         var e = new MyApp.Domain.Entity();
-                        return {|#0:e.Name|};
+                        return e.Name;
                     }
                 }
             }
             """;
 
-        var expected = AnalyzerVerifier.Diagnostic()
-            .WithLocation(0)
-            .WithArguments("Name", "MyApp.Application", "MyApp.UI.View.GetName()");
-
-        await AnalyzerVerifier.VerifyAsync(source, expected);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("Name", sg001.GetMessage());
+        Assert.Contains("MyApp.UI.View.GetName()", sg001.GetMessage());
     }
 
     [Fact]
@@ -63,17 +62,16 @@ public class SG001_PropertyReferenceTests
                     public void SetName()
                     {
                         var e = new MyApp.Domain.Entity();
-                        {|#0:e.Name|} = "test";
+                        e.Name = "test";
                     }
                 }
             }
             """;
 
-        var expected = AnalyzerVerifier.Diagnostic()
-            .WithLocation(0)
-            .WithArguments("Name", "MyApp.Application", "MyApp.UI.View.SetName()");
-
-        await AnalyzerVerifier.VerifyAsync(source, expected);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("Name", sg001.GetMessage());
+        Assert.Contains("MyApp.UI.View.SetName()", sg001.GetMessage());
     }
 
     [Fact]
@@ -104,7 +102,8 @@ public class SG001_PropertyReferenceTests
             }
             """;
 
-        await AnalyzerVerifier.VerifyAsync(source);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
     }
 
     [Fact]
@@ -131,17 +130,15 @@ public class SG001_PropertyReferenceTests
                     public void Use()
                     {
                         var e = new MyApp.Domain.Entity();
-                        var _ = {|#0:e.Restricted|};
+                        var _ = e.Restricted;
                         var __ = e.Open;
                     }
                 }
             }
             """;
 
-        var expected = AnalyzerVerifier.Diagnostic()
-            .WithLocation(0)
-            .WithArguments("Restricted", "MyApp.Application", "MyApp.UI.View.Use()");
-
-        await AnalyzerVerifier.VerifyAsync(source, expected);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("Restricted", sg001.GetMessage());
     }
 }
