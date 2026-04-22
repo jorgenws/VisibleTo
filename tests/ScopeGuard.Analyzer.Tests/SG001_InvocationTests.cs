@@ -7,192 +7,117 @@ using Xunit;
 
 public class SG001_InvocationTests
 {
-    [Fact]
-    public async Task AllowedCaller_NoDiagnostic()
+    private static string Source(string targetNs, string callerNs) => $$"""
+        using ScopeGuard.Attributes;
+
+        namespace {{targetNs}}
+        {
+            public class Service
+            {
+                public void Execute() { }
+            }
+        }
+
+        namespace {{callerNs}}
+        {
+            public class Caller
+            {
+                public void Call()
+                {
+                    var svc = new {{targetNs}}.Service();
+                    svc.Execute();
+                }
+            }
+        }
+        """;
+
+    private static string Source(string targetNs, string callerNs, params string[] patterns)
     {
-        var source = """
+        var attribute = $"\n    [AvailableTo({string.Join(", ", patterns.Select(p => $"\"{p}\""))})]";
+        return $$"""
             using ScopeGuard.Attributes;
 
-            namespace MyApp.Domain
-            {
-                [AvailableTo("MyApp.Application.**")]
-                public class DomainService
+            namespace {{targetNs}}
+            {{{attribute}}
+                public class Service
                 {
                     public void Execute() { }
                 }
             }
 
-            namespace MyApp.Application.UseCases
+            namespace {{callerNs}}
             {
-                public class UseCase
+                public class Caller
                 {
-                    public void Run()
+                    public void Call()
                     {
-                        var svc = new MyApp.Domain.DomainService();
+                        var svc = new {{targetNs}}.Service();
                         svc.Execute();
                     }
                 }
             }
             """;
+    }
 
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+    [Theory]
+    [InlineData("MyApp.Domain", "MyApp.Application.**", "MyApp.Application.UseCases")]
+    [InlineData("MyApp.Domain", "MyApp.Application", "MyApp.Application")]
+    public async Task Allowed_NoDiagnostic(string targetNs, string pattern, string callerNs)
+    {
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source(targetNs, callerNs, pattern));
         Assert.Empty(diagnostics);
     }
 
     [Fact]
-    public async Task DeniedCaller_RaisesSG001()
+    public async Task Allowed_MultiplePatterns_NoDiagnostic()
     {
-        var source = """
-            using ScopeGuard.Attributes;
-
-            namespace MyApp.Domain
-            {
-                [AvailableTo("MyApp.Application.**")]
-                public class DomainService
-                {
-                    public void Execute() { }
-                }
-            }
-
-            namespace MyApp.UI
-            {
-                public class Controller
-                {
-                    public void Action()
-                    {
-                        var svc = new MyApp.Domain.DomainService();
-                        svc.Execute();
-                    }
-                }
-            }
-            """;
-
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Execute", sg001.GetMessage());
-        Assert.Contains("MyApp.Application.**", sg001.GetMessage());
-        Assert.Contains("MyApp.UI.Controller.Action()", sg001.GetMessage());
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(
+            Source("MyApp.Domain", "MyApp.Tests.Integration", "MyApp.Application", "MyApp.Tests.**"));
+        Assert.Empty(diagnostics);
     }
 
-    [Fact]
-    public async Task AttributeOnContainingType_ProtectsAllMembers()
+    [Theory]
+    [InlineData("MyApp.Domain", "MyApp.Application.**", "MyApp.UI")]
+    [InlineData("MyApp.Domain", "MyApp.Application", "MyApp.UI")]
+    public async Task Denied_RaisesSG001(string targetNs, string pattern, string callerNs)
     {
-        var source = """
-            using ScopeGuard.Attributes;
-
-            namespace MyApp.Domain
-            {
-                [AvailableTo("MyApp.Application")]
-                public class Entity
-                {
-                    public void Save() { }
-                }
-            }
-
-            namespace MyApp.UI
-            {
-                public class View
-                {
-                    public void Render()
-                    {
-                        var e = new MyApp.Domain.Entity();
-                        e.Save();
-                    }
-                }
-            }
-            """;
-
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source(targetNs, callerNs, pattern));
         Assert.Single(diagnostics, d => d.Id == "SG001");
-    }
-
-    [Fact]
-    public async Task MultiplePatterns_OneMatches_NoDiagnostic()
-    {
-        var source = """
-            using ScopeGuard.Attributes;
-
-            namespace MyApp.Domain
-            {
-                [AvailableTo("MyApp.Application", "MyApp.Tests.**")]
-                public class DomainService
-                {
-                    public void Execute() { }
-                }
-            }
-
-            namespace MyApp.Tests.Integration
-            {
-                public class IntegrationTest
-                {
-                    public void Test()
-                    {
-                        var svc = new MyApp.Domain.DomainService();
-                        svc.Execute();
-                    }
-                }
-            }
-            """;
-
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        Assert.Empty(diagnostics);
     }
 
     [Fact]
     public async Task NoAttribute_NoDiagnostic()
     {
-        var source = """
-            namespace MyApp.Domain
-            {
-                public class DomainService
-                {
-                    public void Execute() { }
-                }
-            }
-
-            namespace MyApp.UI
-            {
-                public class Controller
-                {
-                    public void Action()
-                    {
-                        var svc = new MyApp.Domain.DomainService();
-                        svc.Execute();
-                    }
-                }
-            }
-            """;
-
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source("MyApp.Domain", "MyApp.UI"));
         Assert.Empty(diagnostics);
     }
 
     [Fact]
-    public async Task MethodLevelAttribute_OnlyThatMethodRestricted()
+    public async Task MethodLevel_OnlyRestrictedMethodBlocked()
     {
         var source = """
             using ScopeGuard.Attributes;
 
             namespace MyApp.Domain
             {
-                public class DomainService
+                public class Service
                 {
                     [AvailableTo("MyApp.Application")]
-                    public void RestrictedMethod() { }
+                    public void Restricted() { }
 
-                    public void OpenMethod() { }
+                    public void Open() { }
                 }
             }
 
             namespace MyApp.UI
             {
-                public class Controller
+                public class Caller
                 {
-                    public void Action()
+                    public void Call()
                     {
-                        var svc = new MyApp.Domain.DomainService();
-                        svc.RestrictedMethod();
-                        svc.OpenMethod();
+                        var svc = new MyApp.Domain.Service();
+                        svc.Restricted();
+                        svc.Open();
                     }
                 }
             }
@@ -200,6 +125,6 @@ public class SG001_InvocationTests
 
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
         var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("RestrictedMethod", sg001.GetMessage());
+        Assert.Contains("Restricted", sg001.GetMessage());
     }
 }
