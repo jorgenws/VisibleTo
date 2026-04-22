@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "WebSearch",
-      "Bash(dotnet sln add *)",
-      "Bash(dotnet build *)"
-    ]
-  }
-}

@@ -12,7 +12,6 @@ using Microsoft.CodeAnalysis.Operations;
 public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
 {
     private const string AttributeFullName = "ScopeGuard.Attributes.AvailableToAttribute";
-    private const string EfCoreNamespacePrefix = "Microsoft.EntityFrameworkCore";
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         => ImmutableArray.Create(Descriptors.SG001);
@@ -66,10 +65,6 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
         if (allowedPatterns is null) return;
 
         var callerNamespace = GetFullNamespace(context.ContainingSymbol);
-
-        if (callerNamespace == EfCoreNamespacePrefix ||
-            callerNamespace.StartsWith(EfCoreNamespacePrefix + "."))
-            return;
 
         if (!allowedPatterns.Value.Any(p => PatternMatcher.IsMatch(callerNamespace, p)))
         {
