@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ScopeGuard.Analyzer/ScopeGuard.Analyzer.csproj" />
+    <Project Path="src/ScopeGuard.Attributes/ScopeGuard.Attributes.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ScopeGuard.Analyzer.Tests/ScopeGuard.Analyzer.Tests.csproj" />
+  </Folder>
+</Solution>
