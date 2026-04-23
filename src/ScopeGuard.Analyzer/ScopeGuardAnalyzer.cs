@@ -36,7 +36,12 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
                 opCtx => AnalyzeOperation(opCtx, attributeType, cache),
                 OperationKind.Invocation,
                 OperationKind.PropertyReference,
-                OperationKind.FieldReference);
+                OperationKind.FieldReference,
+                OperationKind.ObjectCreation);
+
+            compilationCtx.RegisterSymbolAction(
+                symCtx => AnalyzeNamedType(symCtx, attributeType, cache),
+                SymbolKind.NamedType);
         });
     }
 
@@ -52,6 +57,12 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
             IFieldReferenceOperation op => op.Field,
             _ => null
         };
+
+        if (context.Operation is IInvocationOperation invOp)
+            ReportRestrictedTypeArguments(context, invOp.TargetMethod.TypeArguments, attributeType, cache);
+
+        if (context.Operation is IObjectCreationOperation objOp && objOp.Type is INamedTypeSymbol createdType)
+            ReportRestrictedTypeArguments(context, createdType.TypeArguments, attributeType, cache);
 
         if (targetSymbol is null) return;
 
@@ -72,6 +83,72 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
                 targetSymbol.Name,
                 allowedList,
                 callerDisplay));
+        }
+    }
+
+    private static void AnalyzeNamedType(
+        SymbolAnalysisContext context,
+        INamedTypeSymbol attributeType,
+        ConcurrentDictionary<ISymbol, ImmutableArray<string>?> cache)
+    {
+        var symbol = (INamedTypeSymbol)context.Symbol;
+        var callerNamespace = GetFullNamespace(symbol);
+        var callerDisplay = symbol.ToDisplayString();
+        var location = symbol.Locations.FirstOrDefault();
+
+        IEnumerable<INamedTypeSymbol> baseTypes = symbol.Interfaces;
+        if (symbol.BaseType is not null)
+            baseTypes = baseTypes.Prepend(symbol.BaseType);
+
+        foreach (var baseType in baseTypes)
+        foreach (var restricted in FindRestrictedTypeArguments(baseType.TypeArguments, attributeType, cache))
+        {
+            var patterns = GetCachedPatterns(restricted, attributeType, cache)!.Value;
+            if (!patterns.Any(p => PatternMatcher.IsMatch(callerNamespace, p)))
+                context.ReportDiagnostic(Diagnostic.Create(
+                    Descriptors.SG001,
+                    location,
+                    restricted.Name,
+                    string.Join(", ", patterns),
+                    callerDisplay));
+        }
+    }
+
+    private static void ReportRestrictedTypeArguments(
+        OperationAnalysisContext context,
+        ImmutableArray<ITypeSymbol> typeArgs,
+        INamedTypeSymbol attributeType,
+        ConcurrentDictionary<ISymbol, ImmutableArray<string>?> cache)
+    {
+        var callerNamespace = GetFullNamespace(context.ContainingSymbol);
+        var callerDisplay = context.ContainingSymbol.ToDisplayString();
+        var location = context.Operation.Syntax.GetLocation();
+
+        foreach (var restricted in FindRestrictedTypeArguments(typeArgs, attributeType, cache))
+        {
+            var patterns = GetCachedPatterns(restricted, attributeType, cache)!.Value;
+            if (!patterns.Any(p => PatternMatcher.IsMatch(callerNamespace, p)))
+                context.ReportDiagnostic(Diagnostic.Create(
+                    Descriptors.SG001,
+                    location,
+                    restricted.Name,
+                    string.Join(", ", patterns),
+                    callerDisplay));
+        }
+    }
+
+    private static IEnumerable<INamedTypeSymbol> FindRestrictedTypeArguments(
+        ImmutableArray<ITypeSymbol> typeArgs,
+        INamedTypeSymbol attributeType,
+        ConcurrentDictionary<ISymbol, ImmutableArray<string>?> cache)
+    {
+        foreach (var arg in typeArgs)
+        {
+            if (arg is not INamedTypeSymbol named) continue;
+            if (GetCachedPatterns(named, attributeType, cache) is not null)
+                yield return named;
+            foreach (var nested in FindRestrictedTypeArguments(named.TypeArguments, attributeType, cache))
+                yield return nested;
         }
     }
 

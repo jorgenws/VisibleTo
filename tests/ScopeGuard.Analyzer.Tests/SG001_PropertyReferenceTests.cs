@@ -52,4 +52,34 @@ public class SG001_PropertyReferenceTests
         Assert.Empty(diagnostics);
     }
 
+    [Theory]
+    [InlineData("MyApp.Domain", "MyApp.UI", "_ = e.Name;")]
+    [InlineData("MyApp.Domain", "MyApp.UI", "e.Name = \"x\";")]
+    public async Task PropertyAccess_NoAttribute_NoDiagnostic(string targetNs, string callerNs, string access)
+    {
+        var source = $$"""
+            namespace {{targetNs}}
+            {
+                public class Entity
+                {
+                    public string Name { get; set; } = "";
+                }
+            }
+
+            namespace {{callerNs}}
+            {
+                public class Caller
+                {
+                    public void Call()
+                    {
+                        var e = new {{targetNs}}.Entity();
+                        {{access}}
+                    }
+                }
+            }
+            """;
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
+    }
+
 }
