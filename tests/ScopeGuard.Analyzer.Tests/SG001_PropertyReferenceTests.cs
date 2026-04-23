@@ -52,39 +52,4 @@ public class SG001_PropertyReferenceTests
         Assert.Empty(diagnostics);
     }
 
-    [Fact]
-    public async Task PropertyAttributeOnly_OtherPropertiesFree()
-    {
-        var source = """
-            using ScopeGuard.Attributes;
-
-            namespace MyApp.Domain
-            {
-                public class Entity
-                {
-                    [AvailableTo("MyApp.Application")]
-                    public string Restricted { get; set; } = "";
-
-                    public string Open { get; set; } = "";
-                }
-            }
-
-            namespace MyApp.UI
-            {
-                public class Caller
-                {
-                    public void Call()
-                    {
-                        var e = new MyApp.Domain.Entity();
-                        _ = e.Restricted;
-                        _ = e.Open;
-                    }
-                }
-            }
-            """;
-
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Restricted", sg001.GetMessage());
-    }
 }

@@ -92,39 +92,4 @@ public class SG001_InvocationTests
         Assert.Empty(diagnostics);
     }
 
-    [Fact]
-    public async Task MethodLevel_OnlyRestrictedMethodBlocked()
-    {
-        var source = """
-            using ScopeGuard.Attributes;
-
-            namespace MyApp.Domain
-            {
-                public class Service
-                {
-                    [AvailableTo("MyApp.Application")]
-                    public void Restricted() { }
-
-                    public void Open() { }
-                }
-            }
-
-            namespace MyApp.UI
-            {
-                public class Caller
-                {
-                    public void Call()
-                    {
-                        var svc = new MyApp.Domain.Service();
-                        svc.Restricted();
-                        svc.Open();
-                    }
-                }
-            }
-            """;
-
-        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Restricted", sg001.GetMessage());
-    }
 }

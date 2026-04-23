@@ -17,8 +17,7 @@ namespace ScopeGuard.Attributes;
 /// Multiple applications of this attribute are combined with OR logic.
 /// </remarks>
 [AttributeUsage(
-    AttributeTargets.Class | AttributeTargets.Struct |
-    AttributeTargets.Method | AttributeTargets.Property,
+    AttributeTargets.Class | AttributeTargets.Struct,
     AllowMultiple = true,
     Inherited = false)]
 public sealed class AvailableToAttribute : Attribute

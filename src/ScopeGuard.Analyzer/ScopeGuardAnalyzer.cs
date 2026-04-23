@@ -55,12 +55,8 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
 
         if (targetSymbol is null) return;
 
-        // Check the member itself, then fall back to its containing type
-        var allowedPatterns =
-            GetCachedPatterns(targetSymbol, attributeType, cache) ??
-            (targetSymbol.ContainingType is { } ct
-                ? GetCachedPatterns(ct, attributeType, cache)
-                : null);
+        if (targetSymbol.ContainingType is not { } ct) return;
+        var allowedPatterns = GetCachedPatterns(ct, attributeType, cache);
 
         if (allowedPatterns is null) return;
 
