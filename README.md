@@ -126,17 +126,10 @@ public class Entity { ... }
 
 ## Installation
 
-ScopeGuard consists of two packages:
-
-- **ScopeGuard.Attributes** — reference this from your Domain project. Contains only the `[AvailableTo]` attribute; zero dependencies.
-- **ScopeGuard.Analyzer** — reference this from any project that should be analyzed (typically all projects in the solution).
+Install the `ScopeGuard` package in every project in your solution. The package bundles both the `[AvailableTo]` attribute and the analyzer.
 
 ```xml
-<!-- Domain project -->
-<PackageReference Include="ScopeGuard.Attributes" Version="1.0.0" />
-
-<!-- All other projects -->
-<PackageReference Include="ScopeGuard.Analyzer" Version="1.0.0" />
+<PackageReference Include="ScopeGuard" Version="1.0.0" />
 ```
 
 ## Diagnostic Reference

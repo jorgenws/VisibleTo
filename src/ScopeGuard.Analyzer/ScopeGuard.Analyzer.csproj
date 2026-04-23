@@ -7,6 +7,15 @@
     <RootNamespace>ScopeGuard.Analyzer</RootNamespace>
     <IsRoslynComponent>true</IsRoslynComponent>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <PackageId>ScopeGuard</PackageId>
+    <Authors>jorgenws</Authors>
+    <Description>A Roslyn analyzer that enforces Clean Architecture boundaries at compile time using the [AvailableTo] attribute.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/jorgenws/ScopeGuard</RepositoryUrl>
+    <PackageTags>roslyn;analyzer;architecture;clean-architecture</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <DevelopmentDependency>true</DevelopmentDependency>
   </PropertyGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
@@ -16,5 +25,15 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ScopeGuard.Attributes\ScopeGuard.Attributes.csproj">
+      <PrivateAssets>all</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+    <None Include="$(OutputPath)ScopeGuard.Attributes.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
+    <None Include="../../README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 </Project>
