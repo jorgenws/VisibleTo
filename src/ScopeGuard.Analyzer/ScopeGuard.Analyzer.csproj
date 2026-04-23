@@ -9,7 +9,7 @@
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <PackageId>ScopeGuard</PackageId>
     <Authors>jorgenws</Authors>
-    <Description>A Roslyn analyzer that enforces Clean Architecture boundaries at compile time using the [AvailableTo] attribute.</Description>
+    <Description>A Roslyn analyzer that enforces architectural boundaries at compile time using the [VisibleTo] attribute.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/jorgenws/ScopeGuard</RepositoryUrl>
     <PackageTags>roslyn;analyzer;architecture;clean-architecture</PackageTags>

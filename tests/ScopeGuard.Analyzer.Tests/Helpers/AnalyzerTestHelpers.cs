@@ -16,7 +16,7 @@ internal static class AnalyzerVerifier
             .Where(a => !a.IsDynamic && !string.IsNullOrWhiteSpace(a.Location))
             .Select(a => MetadataReference.CreateFromFile(a.Location))
             .Cast<MetadataReference>()
-            .Concat([MetadataReference.CreateFromFile(typeof(AvailableToAttribute).Assembly.Location)])
+            .Concat([MetadataReference.CreateFromFile(typeof(VisibleToAttribute).Assembly.Location)])
             .ToArray();
 
     public static async Task<ImmutableArray<Diagnostic>> GetDiagnosticsAsync(string source)

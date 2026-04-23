@@ -13,7 +13,7 @@ public class SG001_PropertyReferenceTests
 
         namespace {{targetNs}}
         {
-            [AvailableTo("{{pattern}}")]
+            [VisibleTo("{{pattern}}")]
             public class Entity
             {
                 public string Name { get; set; } = "";

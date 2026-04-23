@@ -1,12 +1,12 @@
 # ScopeGuard
 
-A Roslyn-based analyzer that enforces Clean Architecture boundaries at compile time.
+A Roslyn-based analyzer that enforces architectural boundaries at compile time.
 
 ## The Problem
 
-Clean Architecture separates your code into layers — Domain, Application, Infrastructure, UI — where inner layers know nothing about outer ones. In practice this breaks down in one specific place: your ORM.
+Many architectural patterns divide code into layers where access between them should be controlled. In practice this breaks down at one specific place: types that must be `public` for technical reasons, but were never meant to be used everywhere.
 
-EF Core (and similar tools) require entity classes to be `public`. The moment they are, nothing stops a developer from doing this:
+A common example is EF Core — entity classes must be `public` for the ORM to work, but that makes them accessible from any layer in the solution:
 
 ```csharp
 // In a UI controller — this compiles fine, but violates your architecture
@@ -18,14 +18,14 @@ The type is `public` because it has to be. But it was never meant to be used her
 
 ## The Solution
 
-ScopeGuard introduces a `[AvailableTo]` attribute that lets you declare who is allowed to use a type or member. Any violation becomes a **compile-time error** — not a code review comment, not a runtime exception, a build failure.
+ScopeGuard introduces a `[VisibleTo]` attribute that lets you declare which namespaces are allowed to use a type. Any violation becomes a **compile-time error** — not a code review comment, not a runtime exception, a build failure.
 
 ```csharp
 using ScopeGuard.Attributes;
 
 namespace MyApp.Domain
 {
-    [AvailableTo("MyApp.Application.**")]
+    [VisibleTo("MyApp.Application.**")]
     public class User
     {
         public string PasswordHash { get; set; }
@@ -52,7 +52,7 @@ Access denied by ScopeGuard.
 
 ScopeGuard is a Roslyn analyzer — it runs inside the compiler during every build. There is no runtime overhead and no separate tool to run.
 
-When it sees a member access, property read/write, or method call, it checks whether the caller's namespace matches any of the patterns declared on the target. If not, it emits a compiler error.
+When it sees a member access, property read/write, or method call, it checks whether the caller's namespace matches any of the patterns declared on the target type. If not, it emits a compiler error.
 
 ## Pattern Syntax
 
@@ -65,7 +65,7 @@ When it sees a member access, property read/write, or method call, it checks whe
 Multiple patterns are combined with OR logic — access is granted if the caller matches **any** of them.
 
 ```csharp
-[AvailableTo("MyApp.Application.**", "MyApp.Tests.**")]
+[VisibleTo("MyApp.Application.**", "MyApp.Tests.**")]
 public class Order { ... }
 ```
 
@@ -76,7 +76,7 @@ public class Order { ... }
 ```csharp
 namespace MyApp.Domain
 {
-    [AvailableTo("MyApp.Application.**")]
+    [VisibleTo("MyApp.Application.**")]
     public class Invoice
     {
         public decimal Total { get; set; }
@@ -87,46 +87,18 @@ namespace MyApp.Domain
 
 All members of `Invoice` are restricted. Only code in `MyApp.Application` or its sub-namespaces may call `Approve()` or read `Total`.
 
-### Protect a single member
-
-```csharp
-namespace MyApp.Domain
-{
-    public class Product
-    {
-        public string Name { get; set; }
-
-        [AvailableTo("MyApp.Application.Pricing")]
-        public decimal CostPrice { get; set; }
-    }
-}
-```
-
-`Name` is freely accessible. `CostPrice` is only accessible from `MyApp.Application.Pricing`.
-
 ### Allow multiple layers
 
 ```csharp
-[AvailableTo("MyApp.Application.**", "MyApp.Tests.**")]
+[VisibleTo("MyApp.Application.**", "MyApp.Tests.**")]
 public class OrderLine { ... }
 ```
 
 Both application code and tests can access `OrderLine`. Everything else cannot.
 
-### Using `nameof` for refactor safety
-
-String literals in attributes are a refactoring hazard — rename a namespace and the attribute silently refers to a name that no longer exists. Use `nameof` to keep patterns tied to real symbols:
-
-```csharp
-[AvailableTo(nameof(MyApp.Application))]
-public class Entity { ... }
-```
-
-> **Note:** `nameof` evaluates to the last identifier only — `nameof(MyApp.Application)` produces `"Application"`, not `"MyApp.Application"`. Use it for single-segment patterns or combine with string concatenation for full paths.
-
 ## Installation
 
-Install the `ScopeGuard` package in every project in your solution. The package bundles both the `[AvailableTo]` attribute and the analyzer.
+Install the `ScopeGuard` package in every project in your solution. The package bundles both the `[VisibleTo]` attribute and the analyzer.
 
 ```xml
 <PackageReference Include="ScopeGuard" Version="1.0.0" />

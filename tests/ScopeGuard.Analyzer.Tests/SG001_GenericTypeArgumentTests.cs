@@ -12,7 +12,7 @@ public class SG001_GenericTypeArgumentTests
 
         namespace {{targetNs}}
         {
-            [AvailableTo("{{pattern}}")]
+            [VisibleTo("{{pattern}}")]
             public class Entity { }
 
             public class Repository
@@ -92,7 +92,7 @@ public class SG001_GenericTypeArgumentTests
 
             namespace MyApp.Domain
             {
-                [AvailableTo("MyApp.Application")]
+                [VisibleTo("MyApp.Application")]
                 public class Entity { }
 
                 public class Repository
@@ -127,7 +127,7 @@ public class SG001_GenericTypeArgumentTests
 
             namespace MyApp.Domain
             {
-                [AvailableTo("MyApp.Application")]
+                [VisibleTo("MyApp.Application")]
                 public class Entity { }
 
                 public class Repository

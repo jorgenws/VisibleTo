@@ -12,7 +12,7 @@ public class SG001_ObjectCreationTests
 
         namespace MyApp.Domain
         {
-            [AvailableTo("MyApp.Application")]
+            [VisibleTo("MyApp.Application")]
             public class Entity { }
         }
 

@@ -11,7 +11,7 @@ using Microsoft.CodeAnalysis.Operations;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
 {
-    private const string AttributeFullName = "ScopeGuard.Attributes.AvailableToAttribute";
+    private const string AttributeFullName = "ScopeGuard.Attributes.VisibleToAttribute";
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
         => ImmutableArray.Create(Descriptors.SG001);
@@ -101,17 +101,17 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
             baseTypes = baseTypes.Prepend(symbol.BaseType);
 
         foreach (var baseType in baseTypes)
-        foreach (var restricted in FindRestrictedTypeArguments(baseType.TypeArguments, attributeType, cache))
-        {
-            var patterns = GetCachedPatterns(restricted, attributeType, cache)!.Value;
-            if (!patterns.Any(p => PatternMatcher.IsMatch(callerNamespace, p)))
-                context.ReportDiagnostic(Diagnostic.Create(
-                    Descriptors.SG001,
-                    location,
-                    restricted.Name,
-                    string.Join(", ", patterns),
-                    callerDisplay));
-        }
+            foreach (var restricted in FindRestrictedTypeArguments(baseType.TypeArguments, attributeType, cache))
+            {
+                var patterns = GetCachedPatterns(restricted, attributeType, cache)!.Value;
+                if (!patterns.Any(p => PatternMatcher.IsMatch(callerNamespace, p)))
+                    context.ReportDiagnostic(Diagnostic.Create(
+                        Descriptors.SG001,
+                        location,
+                        restricted.Name,
+                        string.Join(", ", patterns),
+                        callerDisplay));
+            }
     }
 
     private static void ReportRestrictedTypeArguments(

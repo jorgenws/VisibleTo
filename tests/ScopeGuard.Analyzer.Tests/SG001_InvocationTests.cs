@@ -33,7 +33,7 @@ public class SG001_InvocationTests
 
     private static string Source(string targetNs, string callerNs, params string[] patterns)
     {
-        var attribute = $"\n    [AvailableTo({string.Join(", ", patterns.Select(p => $"\"{p}\""))})]";
+        var attribute = $"\n    [VisibleTo({string.Join(", ", patterns.Select(p => $"\"{p}\""))})]";
         return $$"""
             using ScopeGuard.Attributes;
 

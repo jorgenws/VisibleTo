@@ -20,10 +20,10 @@ namespace ScopeGuard.Attributes;
     AttributeTargets.Class | AttributeTargets.Struct,
     AllowMultiple = true,
     Inherited = false)]
-public sealed class AvailableToAttribute : Attribute
+public sealed class VisibleToAttribute : Attribute
 {
     public string[] AllowedPatterns { get; }
 
-    public AvailableToAttribute(params string[] allowedPatterns)
+    public VisibleToAttribute(params string[] allowedPatterns)
         => AllowedPatterns = allowedPatterns;
 }
