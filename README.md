@@ -96,14 +96,6 @@ public class OrderLine { ... }
 
 Both application code and tests can access `OrderLine`. Everything else cannot.
 
-## Installation
-
-Install the `ScopeGuard` package in every project in your solution. The package bundles both the `[VisibleTo]` attribute and the analyzer.
-
-```xml
-<PackageReference Include="ScopeGuard" Version="1.0.0" />
-```
-
 ## Diagnostic Reference
 
 | ID | Severity | Message |
