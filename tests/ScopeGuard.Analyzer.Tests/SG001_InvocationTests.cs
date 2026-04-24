@@ -22,9 +22,8 @@ public class SG001_InvocationTests
         {
             public class Caller
             {
-                public void Call()
+                public void Call({{targetNs}}.Service svc)
                 {
-                    var svc = new {{targetNs}}.Service();
                     svc.Execute();
                 }
             }
@@ -49,9 +48,8 @@ public class SG001_InvocationTests
             {
                 public class Caller
                 {
-                    public void Call()
+                    public void Call({{targetNs}}.Service svc)
                     {
-                        var svc = new {{targetNs}}.Service();
                         svc.Execute();
                     }
                 }

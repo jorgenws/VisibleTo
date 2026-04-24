@@ -160,4 +160,43 @@ public class SG001_ObjectCreationTests
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
         Assert.Empty(diagnostics);
     }
+
+    [Fact]
+    public async Task ObjectCreation_DirectOfRestrictedType_Denied_RaisesSG001()
+    {
+        var source = Preamble + """
+            namespace MyApp.UI
+            {
+                public class Caller
+                {
+                    public void Call()
+                    {
+                        var e = new MyApp.Domain.Entity();
+                    }
+                }
+            }
+            """;
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("Entity", sg001.GetMessage());
+    }
+
+    [Fact]
+    public async Task ObjectCreation_DirectOfRestrictedType_Allowed_NoDiagnostic()
+    {
+        var source = Preamble + """
+            namespace MyApp.Application
+            {
+                public class Caller
+                {
+                    public void Call()
+                    {
+                        var e = new MyApp.Domain.Entity();
+                    }
+                }
+            }
+            """;
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
+    }
 }

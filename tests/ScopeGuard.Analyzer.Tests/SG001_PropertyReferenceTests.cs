@@ -24,9 +24,8 @@ public class SG001_PropertyReferenceTests
         {
             public class Caller
             {
-                public void Call()
+                public void Call({{targetNs}}.Entity e)
                 {
-                    var e = new {{targetNs}}.Entity();
                     {{propertyAccess}}
                 }
             }

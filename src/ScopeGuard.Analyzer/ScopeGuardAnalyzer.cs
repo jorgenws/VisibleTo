@@ -50,24 +50,34 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
         INamedTypeSymbol attributeType,
         ConcurrentDictionary<ISymbol, ImmutableArray<string>?> cache)
     {
-        ISymbol? targetSymbol = context.Operation switch
+        ISymbol? targetSymbol;
+        INamedTypeSymbol? gatedType;
+        switch (context.Operation)
         {
-            IInvocationOperation op => op.TargetMethod,
-            IPropertyReferenceOperation op => op.Property,
-            IFieldReferenceOperation op => op.Field,
-            _ => null
-        };
+            case IInvocationOperation op:
+                targetSymbol = op.TargetMethod;
+                gatedType = op.TargetMethod.ContainingType;
+                ReportRestrictedTypeArguments(context, op.TargetMethod.TypeArguments, attributeType, cache);
+                break;
+            case IPropertyReferenceOperation op:
+                targetSymbol = op.Property;
+                gatedType = op.Property.ContainingType;
+                break;
+            case IFieldReferenceOperation op:
+                targetSymbol = op.Field;
+                gatedType = op.Field.ContainingType;
+                break;
+            case IObjectCreationOperation op when op.Type is INamedTypeSymbol createdType:
+                targetSymbol = createdType;
+                gatedType = createdType;
+                ReportRestrictedTypeArguments(context, createdType.TypeArguments, attributeType, cache);
+                break;
+            default:
+                return;
+        }
 
-        if (context.Operation is IInvocationOperation invOp)
-            ReportRestrictedTypeArguments(context, invOp.TargetMethod.TypeArguments, attributeType, cache);
-
-        if (context.Operation is IObjectCreationOperation objOp && objOp.Type is INamedTypeSymbol createdType)
-            ReportRestrictedTypeArguments(context, createdType.TypeArguments, attributeType, cache);
-
-        if (targetSymbol is null) return;
-
-        if (targetSymbol.ContainingType is not { } ct) return;
-        var allowedPatterns = GetCachedPatterns(ct, attributeType, cache);
+        if (gatedType is null) return;
+        var allowedPatterns = GetCachedPatterns(gatedType, attributeType, cache);
 
         if (allowedPatterns is null) return;
 
