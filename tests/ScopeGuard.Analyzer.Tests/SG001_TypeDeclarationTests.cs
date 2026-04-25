@@ -155,4 +155,31 @@ public class SG001_TypeDeclarationTests
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
         Assert.Empty(diagnostics);
     }
+
+    [Fact]
+    public async Task DirectBaseClass_Denied_RaisesSG001()
+    {
+        var source = EntityDef + """
+            namespace MyApp.UI
+            {
+                public class Sub : MyApp.Domain.Entity { }
+            }
+            """;
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains("Entity", sg001.GetMessage());
+    }
+
+    [Fact]
+    public async Task DirectBaseClass_Allowed_NoDiagnostic()
+    {
+        var source = EntityDef + """
+            namespace MyApp.Application
+            {
+                public class Sub : MyApp.Domain.Entity { }
+            }
+            """;
+        var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
+        Assert.Empty(diagnostics);
+    }
 }
