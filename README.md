@@ -37,14 +37,17 @@ Any of the following from an unauthorized namespace now fails to build:
 
 ```csharp
 // In MyApp.UI.Controllers
-var hash = user.PasswordHash;   // error SG001 — member access
-var user = new User();          // error SG001 — object creation
+var user = new User();                         // error SG001 — object creation
+var hash = user.PasswordHash;                  // error SG001 — member access
 ```
 
 ```csharp
 // In MyApp.UI
 class AdminUser : User { }                     // error SG001 — inheritance
-class UserList : IEnumerable<User> { ... }     // error SG001 — generic type argument
+class UserList : IEnumerable<User> { }         // error SG001 — generic type argument
+void Handle(User user) { }                     // error SG001 — method parameter
+User GetCurrent() => null!;                    // error SG001 — return type
+private User _current;                         // error SG001 — field type
 ```
 
 ## What Is Checked
@@ -53,8 +56,12 @@ ScopeGuard catches every place a restricted type appears:
 
 - **Member access** — calling a method, reading or writing a property or field on a restricted type
 - **Object creation** — `new RestrictedType()`
-- **Type declarations** — inheriting from or implementing a restricted type
-- **Generic type arguments** — `IRepository<User>`, `List<User>`, `IHandler<Command<User>>`
+- **Inheritance and interface implementation** — `class Sub : RestrictedType`, `class Impl : IRestrictedInterface`
+- **Method signatures** — a restricted type as a parameter type or return type, including constructors
+- **Field and property types** — `private User _user`, `public User Current { get; set; }`
+- **Delegate signatures** — a restricted type as a parameter or return type of a delegate declaration
+- **Event types** — `public event UserChanged OnChanged`
+- **Generic type arguments** — in all of the above: `List<User>`, `IRepository<User>`, `Action<User>`, `IHandler<Command<User>>`
 
 The attribute is placed on the **type**, not on individual members. All uses of the type are restricted.
 
@@ -77,6 +84,7 @@ public class Order { ... }
 
 - `[VisibleTo]` can only be applied to **classes and structs**. It cannot be placed on methods, properties, or fields.
 - The attribute is **not inherited** — subclasses of a restricted type are not themselves restricted unless they carry their own `[VisibleTo]`.
+- **Same-layer references**: because member signatures are checked, types in the same layer that reference each other must include their own namespace in the allowed list. For example, if `User` and `Order` are both in `MyApp.Domain` and `Order` appears in a `User` method signature, `Order`'s `[VisibleTo]` must include `"MyApp.Domain.**"` alongside any other allowed namespaces.
 
 ## Diagnostic Reference
 
