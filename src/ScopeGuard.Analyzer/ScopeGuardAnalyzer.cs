@@ -67,6 +67,9 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
         var patterns = visibleToCtx.GetPatterns(site.GatedType);
         if (patterns.IsDefault) return;
 
+        var callerType = (caller as INamedTypeSymbol) ?? caller.ContainingType;
+        if (SymbolEqualityComparer.Default.Equals(callerType, site.GatedType)) return;
+
         var callerNs = visibleToCtx.GetNamespace(caller);
 
         for (int i = 0; i < patterns.Length; i++)
