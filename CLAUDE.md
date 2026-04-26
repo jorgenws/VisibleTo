@@ -32,12 +32,19 @@ Three projects:
 
 1. **Operation-level** (`RegisterOperationAction`): triggered on `Invocation`, `PropertyReference`, `FieldReference`, and `ObjectCreation`. Checks whether the *containing type* of the accessed member carries `[VisibleTo]`, and also walks generic type arguments (including nested ones) to catch e.g. `repo.Get<Entity>()` or `new List<Entity>()`.
 
-2. **Symbol-level** (`RegisterSymbolAction` on `NamedType`): triggered when a class or struct is declared. Walks its base type and interfaces, then checks their generic type arguments for `[VisibleTo]`-protected types. This catches declarations like `class Repo : IRepository<Entity>`.
+2. **Symbol-level** (`RegisterSymbolAction` on `NamedType`): triggered when a class or struct is declared. Walks:
+   - Base type and interfaces (including their generic type arguments)
+   - All declared members: method return types and parameters, property types, field types, event types
+   - Delegate invoke signatures (via `DelegateInvokeMethod`, since delegate members are `IsImplicitlyDeclared`)
+
+   This catches `class Repo : IRepository<Entity>`, `User GetUser()`, `void Handle(User u)`, `public User CurrentUser { get; }`, etc.
 
 Both passes use a `ConcurrentDictionary` cache keyed on `ISymbol` to avoid re-reading attributes for the same type repeatedly across a compilation.
 
+A self-reference guard in `Enforce` ensures a type never triggers SG001 for referencing itself — `SymbolEqualityComparer.Default.Equals(callerType, site.GatedType)` is checked before pattern matching.
+
 Pattern matching (`PatternMatcher.cs`) converts each pattern string into a compiled `Regex`:
-- `**` → `.*` (matches across any number of namespace segments)
+- `**` → `.*` (matches across any number of namespace segments, including zero — `Foo.**` matches `Foo` itself)
 - `*` → `[^.]+` (matches within a single segment)
 - Literal strings are `Regex.Escape`d
 
@@ -50,6 +57,12 @@ Pattern matching (`PatternMatcher.cs`) converts each pattern string into a compi
 ### Test approach
 
 `AnalyzerVerifier.GetDiagnosticsAsync(source)` compiles a raw C# string in memory (referencing the real `ScopeGuard.Attributes` assembly) and returns all analyzer diagnostics. Tests assert on diagnostic ID (`SG001`) and message content. There are no mocks.
+
+### NuGet package structure
+
+The package is **not** marked `DevelopmentDependency`, so it flows transitively in the NuGet graph. Any project that (directly or indirectly) depends on a project referencing ScopeGuard will have the analyzer applied automatically.
+
+`build/ScopeGuard.props` adds `ScopeGuard.Attributes` as an explicit `<Reference>` via HintPath for direct consumers. Transitive consumers get `ScopeGuard.Attributes.dll` through NuGet's normal `lib/netstandard2.0` compile asset flow.
 
 ### Publishing
 
