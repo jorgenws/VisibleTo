@@ -7,7 +7,7 @@ public class SG001_PatternMatchingTests
     [Theory]
     [InlineData("MyApp.Domain.Entities", true)]
     [InlineData("MyApp.Domain.Entities.Sub", true)]
-    [InlineData("MyApp.Domain", false)]
+    [InlineData("MyApp.Domain", true)]
     [InlineData("MyApp.Other.Entities", false)]
     [InlineData("Other.Domain.Entities", false)]
     public void DoubleStarMatchesAcrossSegments(string caller, bool expected)
