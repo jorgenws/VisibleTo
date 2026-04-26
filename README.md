@@ -33,26 +33,30 @@ namespace MyApp.Domain
 }
 ```
 
-Now this:
+Any of the following from an unauthorized namespace now fails to build:
 
 ```csharp
 // In MyApp.UI.Controllers
-var hash = user.PasswordHash; // error SG001: Access denied by ScopeGuard
+var hash = user.PasswordHash;   // error SG001 — member access
+var user = new User();          // error SG001 — object creation
 ```
 
-Fails to build with:
-
-```
-error SG001: Member 'PasswordHash' is available to 'MyApp.Application.**',
-but is being accessed by 'MyApp.UI.Controllers.UserController.Index()'.
-Access denied by ScopeGuard.
+```csharp
+// In MyApp.UI
+class AdminUser : User { }                     // error SG001 — inheritance
+class UserList : IEnumerable<User> { ... }     // error SG001 — generic type argument
 ```
 
-## How It Works
+## What Is Checked
 
-ScopeGuard is a Roslyn analyzer — it runs inside the compiler during every build. There is no runtime overhead and no separate tool to run.
+ScopeGuard catches every place a restricted type appears:
 
-When it sees a member access, property read/write, or method call, it checks whether the caller's namespace matches any of the patterns declared on the target type. If not, it emits a compiler error.
+- **Member access** — calling a method, reading or writing a property or field on a restricted type
+- **Object creation** — `new RestrictedType()`
+- **Type declarations** — inheriting from or implementing a restricted type
+- **Generic type arguments** — `IRepository<User>`, `List<User>`, `IHandler<Command<User>>`
+
+The attribute is placed on the **type**, not on individual members. All uses of the type are restricted.
 
 ## Pattern Syntax
 
@@ -69,32 +73,10 @@ Multiple patterns are combined with OR logic — access is granted if the caller
 public class Order { ... }
 ```
 
-## Examples
+## Notes
 
-### Protect an entire class
-
-```csharp
-namespace MyApp.Domain
-{
-    [VisibleTo("MyApp.Application.**")]
-    public class Invoice
-    {
-        public decimal Total { get; set; }
-        public void Approve() { }
-    }
-}
-```
-
-All members of `Invoice` are restricted. Only code in `MyApp.Application` or its sub-namespaces may call `Approve()` or read `Total`.
-
-### Allow multiple layers
-
-```csharp
-[VisibleTo("MyApp.Application.**", "MyApp.Tests.**")]
-public class OrderLine { ... }
-```
-
-Both application code and tests can access `OrderLine`. Everything else cannot.
+- `[VisibleTo]` can only be applied to **classes and structs**. It cannot be placed on methods, properties, or fields.
+- The attribute is **not inherited** — subclasses of a restricted type are not themselves restricted unless they carry their own `[VisibleTo]`.
 
 ## Diagnostic Reference
 

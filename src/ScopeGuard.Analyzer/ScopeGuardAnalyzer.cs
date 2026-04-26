@@ -45,8 +45,8 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
         OperationAnalysisContext context,
         VisibleToContext visibleToCtx)
     {
-        Extractors.ExtractFromOperation(context.Operation,
-            site => Enforce(site, context.ContainingSymbol, visibleToCtx, context.ReportDiagnostic));
+        foreach (var site in Extractors.ExtractFromOperation(context.Operation))
+            Enforce(site, context.ContainingSymbol, visibleToCtx, context.ReportDiagnostic);
     }
 
     private static void AnalyzeNamedType(
@@ -54,8 +54,8 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
         VisibleToContext visibleToCtx)
     {
         var type = (INamedTypeSymbol)context.Symbol;
-        Extractors.ExtractFromNamedType(type,
-            site => Enforce(site, type, visibleToCtx, context.ReportDiagnostic));
+        foreach (var site in Extractors.ExtractFromNamedType(type))
+            Enforce(site, type, visibleToCtx, context.ReportDiagnostic);
     }
 
     private static void Enforce(

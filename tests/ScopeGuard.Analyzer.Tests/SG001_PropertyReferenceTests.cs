@@ -38,8 +38,7 @@ public class SG001_PropertyReferenceTests
     public async Task PropertyAccess_Denied_RaisesSG001(string targetNs, string pattern, string callerNs, string access)
     {
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(ClassLevelSource(targetNs, callerNs, pattern, access));
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Name", sg001.GetMessage());
+        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Name"));
     }
 
     [Theory]

@@ -33,8 +33,7 @@ public class SG001_TypeDeclarationTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Entity"));
     }
 
     [Fact]

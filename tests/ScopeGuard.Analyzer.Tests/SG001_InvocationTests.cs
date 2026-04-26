@@ -80,7 +80,7 @@ public class SG001_InvocationTests
     public async Task Denied_RaisesSG001(string targetNs, string pattern, string callerNs)
     {
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source(targetNs, callerNs, pattern));
-        Assert.Single(diagnostics, d => d.Id == "SG001");
+        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Execute"));
     }
 
     [Fact]
