@@ -17,7 +17,7 @@ namespace ScopeGuard.Attributes;
 /// Multiple applications of this attribute are combined with OR logic.
 /// </remarks>
 [AttributeUsage(
-    AttributeTargets.Class | AttributeTargets.Struct,
+    AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum,
     AllowMultiple = true,
     Inherited = false)]
 public sealed class VisibleToAttribute : Attribute
