@@ -33,7 +33,7 @@ public class SG001_EnumTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Active"));
+        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("OrderStatus"));
     }
 
     [Fact]

@@ -19,17 +19,17 @@ internal static class Extractors
         switch (operation)
         {
             case IInvocationOperation op:
-                yield return new GatedSite(op.TargetMethod.ContainingType, op.TargetMethod.Name, location);
+                yield return new GatedSite(op.TargetMethod.ContainingType, op.TargetMethod.ContainingType.Name, location);
                 foreach (var site in WalkTypeArgs(op.TargetMethod.TypeArguments, location))
                     yield return site;
                 break;
 
             case IPropertyReferenceOperation op:
-                yield return new GatedSite(op.Property.ContainingType, op.Property.Name, location);
+                yield return new GatedSite(op.Property.ContainingType, op.Property.ContainingType.Name, location);
                 break;
 
             case IFieldReferenceOperation op:
-                yield return new GatedSite(op.Field.ContainingType, op.Field.Name, location);
+                yield return new GatedSite(op.Field.ContainingType, op.Field.ContainingType.Name, location);
                 break;
 
             case IObjectCreationOperation op when op.Type is INamedTypeSymbol created:
