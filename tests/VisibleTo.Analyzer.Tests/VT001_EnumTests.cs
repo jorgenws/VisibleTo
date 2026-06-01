@@ -1,13 +1,13 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_EnumTests
+public class VT001_EnumTests
 {
     private const string EnumDef = """
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
 
         namespace MyApp.Domain
         {
@@ -33,7 +33,7 @@ public class SG001_EnumTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("OrderStatus"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("OrderStatus"));
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class SG001_EnumTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("OrderStatus"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("OrderStatus"));
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class SG001_EnumTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("OrderStatus"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("OrderStatus"));
     }
 
     [Fact]

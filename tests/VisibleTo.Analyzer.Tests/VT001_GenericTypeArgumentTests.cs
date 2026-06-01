@@ -1,13 +1,13 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_GenericTypeArgumentTests
+public class VT001_GenericTypeArgumentTests
 {
     private static string Source(string targetNs, string callerNs, string pattern, string callExpression) => $$"""
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
         using System.Collections.Generic;
 
         namespace {{targetNs}}
@@ -39,8 +39,8 @@ public class SG001_GenericTypeArgumentTests
     {
         var source = Source("MyApp.Domain", "MyApp.UI", "MyApp.Application", "repo.Get<MyApp.Domain.Entity>();");
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        var vt001 = Assert.Single(diagnostics, d => d.Id == "VT001");
+        Assert.Contains("Entity", vt001.GetMessage());
     }
 
     [Fact]
@@ -87,7 +87,7 @@ public class SG001_GenericTypeArgumentTests
     public async Task NestedGenericTypeArgument_Denied_RaisesSG001()
     {
         var source = """
-            using ScopeGuard.Attributes;
+            using VisibleTo.Attributes;
             using System.Collections.Generic;
 
             namespace MyApp.Domain
@@ -114,15 +114,15 @@ public class SG001_GenericTypeArgumentTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        var vt001 = Assert.Single(diagnostics, d => d.Id == "VT001");
+        Assert.Contains("Entity", vt001.GetMessage());
     }
 
     [Fact]
     public async Task NestedGenericTypeArgument_Allowed_NoDiagnostic()
     {
         var source = """
-            using ScopeGuard.Attributes;
+            using VisibleTo.Attributes;
             using System.Collections.Generic;
 
             namespace MyApp.Domain

@@ -1,9 +1,9 @@
-namespace ScopeGuard.Analyzer.Tests.Helpers;
+namespace VisibleTo.Analyzer.Tests.Helpers;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
-using ScopeGuard.Attributes;
+using VisibleTo.Attributes;
 using System;
 using System.Collections.Immutable;
 using System.Linq;
@@ -28,7 +28,7 @@ internal static class AnalyzerVerifier
             References,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        var analyzers = ImmutableArray.Create<DiagnosticAnalyzer>(new ScopeGuardAnalyzer());
+        var analyzers = ImmutableArray.Create<DiagnosticAnalyzer>(new VisibleToAnalyzer());
         var withAnalyzers = compilation.WithAnalyzers(analyzers);
         return await withAnalyzers.GetAnalyzerDiagnosticsAsync();
     }

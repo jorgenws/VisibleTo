@@ -1,11 +1,11 @@
 using System;
 
-namespace ScopeGuard.Attributes;
+namespace VisibleTo.Attributes;
 
 /// <summary>
 /// Restricts access to the decorated type or member to the specified namespace patterns.
 /// Any caller whose full namespace does not match at least one pattern will receive a
-/// compile-time error (SG001) from the ScopeGuard analyzer.
+/// compile-time error (VT001) from the VisibleTo analyzer.
 /// </summary>
 /// <remarks>
 /// Supported pattern syntax:

@@ -1,15 +1,15 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_PropertyReferenceTests
+public class VT001_PropertyReferenceTests
 {
     private static string ClassLevelSource(string targetNs, string callerNs, string pattern, string propertyAccess) =>
         $$"""
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
 
         namespace {{targetNs}}
         {
@@ -38,7 +38,7 @@ public class SG001_PropertyReferenceTests
     public async Task PropertyAccess_Denied_RaisesSG001(string targetNs, string pattern, string callerNs, string access)
     {
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(ClassLevelSource(targetNs, callerNs, pattern, access));
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Entity"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("Entity"));
     }
 
     [Theory]

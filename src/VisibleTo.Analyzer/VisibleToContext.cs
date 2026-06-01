@@ -1,4 +1,4 @@
-namespace ScopeGuard.Analyzer;
+namespace VisibleTo.Analyzer;
 
 using System;
 using System.Collections.Concurrent;

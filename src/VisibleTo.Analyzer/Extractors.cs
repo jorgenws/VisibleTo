@@ -1,4 +1,4 @@
-namespace ScopeGuard.Analyzer;
+namespace VisibleTo.Analyzer;
 
 using System.Collections.Generic;
 using System.Collections.Immutable;

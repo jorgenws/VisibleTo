@@ -1,4 +1,4 @@
-namespace ScopeGuard.Analyzer;
+namespace VisibleTo.Analyzer;
 
 using System;
 using System.Collections.Immutable;
@@ -7,12 +7,12 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
+public sealed class VisibleToAnalyzer : DiagnosticAnalyzer
 {
-    private const string AttributeFullName = "ScopeGuard.Attributes.VisibleToAttribute";
+    private const string AttributeFullName = "VisibleTo.Attributes.VisibleToAttribute";
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics
-        => [Descriptors.SG001];
+        => [Descriptors.VT001];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -78,7 +78,7 @@ public sealed class ScopeGuardAnalyzer : DiagnosticAnalyzer
         }
 
         report(Diagnostic.Create(
-            Descriptors.SG001,
+            Descriptors.VT001,
             site.Location,
             site.TargetDisplayName,
             string.Join(", ", patterns),

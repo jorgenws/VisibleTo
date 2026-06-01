@@ -24,7 +24,7 @@ jobs:
         run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Pack
-        run: dotnet pack src/ScopeGuard.Analyzer/ScopeGuard.Analyzer.csproj --configuration Release --no-build --output ./nupkgs /p:Version=${{ steps.version.outputs.VERSION }}
+        run: dotnet pack src/VisibleTo.Analyzer/VisibleTo.Analyzer.csproj --configuration Release --no-build --output ./nupkgs /p:Version=${{ steps.version.outputs.VERSION }}
 
       - name: Push
         run: dotnet nuget push ./nupkgs/*.nupkg --api-key ${{ secrets.NUGETAPIKEY }} --source https://api.nuget.org/v3/index.json

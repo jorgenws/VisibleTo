@@ -1,14 +1,14 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_InvocationTests
+public class VT001_InvocationTests
 {
     private static string Source(string targetNs, string callerNs) => $$"""
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
 
         namespace {{targetNs}}
         {
@@ -34,7 +34,7 @@ public class SG001_InvocationTests
     {
         var attribute = $"\n    [VisibleTo({string.Join(", ", patterns.Select(p => $"\"{p}\""))})]";
         return $$"""
-            using ScopeGuard.Attributes;
+            using VisibleTo.Attributes;
 
             namespace {{targetNs}}
             {{{attribute}}
@@ -80,7 +80,7 @@ public class SG001_InvocationTests
     public async Task Denied_RaisesSG001(string targetNs, string pattern, string callerNs)
     {
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source(targetNs, callerNs, pattern));
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Service"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("Service"));
     }
 
     [Fact]

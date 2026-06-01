@@ -1,8 +1,8 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
 using Xunit;
 
-public class SG001_PatternMatchingTests
+public class VT001_PatternMatchingTests
 {
     [Theory]
     [InlineData("MyApp.Domain.Entities", true)]

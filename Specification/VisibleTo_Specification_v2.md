@@ -1,22 +1,22 @@
-# Specification: ScopeGuard (v2)
+# Specification: VisibleTo (v2)
 
-**ScopeGuard** is a specialized Roslyn-based architectural enforcement tool for C#. It allows developers to define "Virtual Access Modifiers" to maintain strict Clean Architecture boundaries, specifically solving the conflict where Domain entities must be `public` for infrastructure tools (like EF Core) but should remain "invisible" to other layers (like the UI).
+**VisibleTo** is a specialized Roslyn-based architectural enforcement tool for C#. It allows developers to define "Virtual Access Modifiers" to maintain strict Clean Architecture boundaries, specifically solving the conflict where Domain entities must be `public` for infrastructure tools (like EF Core) but should remain "invisible" to other layers (like the UI).
 
 ---
 
 ## 1. Project Architecture
 The solution is divided into two distinct components to ensure the Domain layer remains decoupled from the Infrastructure layer.
 
-* **ScopeGuard.Attributes**
+* **VisibleTo.Attributes**
     * **Target:** .NET 10 / C# 14+
     * **Role:** Contains the attribute definitions. This is the only library referenced by the Domain project.
-* **ScopeGuard.Analyzer**
+* **VisibleTo.Analyzer**
     * **Target:** `.netstandard2.0` (Requirement for Roslyn compatibility).
     * **Role:** The engine that performs semantic analysis and enforces compile-time errors.
 
 ---
 
-## 2. The Attribute: `[AvailableTo]`
+## 2. The Attribute: `[VisibleTo]`
 The primary tool for developers. It defines which classes or namespaces are permitted to access a specific type or member.
 
 * **Targets:** `Class`, `Property`, `Method`, `Struct`.
@@ -26,15 +26,15 @@ The primary tool for developers. It defines which classes or namespaces are perm
 ---
 
 ## 3. The Enforcement Engine (Analyzer)
-The analyzer converts "legal" C# code into a **Build Error** if it violates the `AvailableTo` contract.
+The analyzer converts "legal" C# code into a **Build Error** if it violates the `VisibleTo` contract.
 
 ### Detection Mechanism: Usage Check
-Unlike standard analyzers that only look at definitions, ScopeGuard performs a **Usage Check** by patrolling the codebase for references to restricted types.
+Unlike standard analyzers that only look at definitions, VisibleTo performs a **Usage Check** by patrolling the codebase for references to restricted types.
 
 1.  **Operation Detection:** Instead of raw syntax, the analyzer registers for `OperationKind.Invocation`, `PropertyReference`, and `FieldReference`. This ensures that `var` usage, method calls, and property access are all caught regardless of coding style.
 2.  **Semantic Mapping:** Uses the `SemanticModel` to resolve usage into a `Symbol`.
-3.  **Symbolic Extraction:** Checks the Symbol (or its parent type) for the `AvailableToAttribute`.
-4.  **Constant Evaluation:** Extracts string patterns from the Symbolic model’s `ConstructorArguments`, resolving `nameof()` expressions into final strings.
+3.  **Symbolic Extraction:** Checks the Symbol (or its parent type) for the `VisibleToAttribute`.
+4.  **Constant Evaluation:** Extracts string patterns from the Symbolic model's `ConstructorArguments`, resolving `nameof()` expressions into final strings.
 5.  **Context Comparison:** Identifies the "Caller" using `context.ContainingSymbol` and compares its Full Name against the allowed patterns.
 
 ### Optimization: Compilation-Level Caching
@@ -57,6 +57,6 @@ To maintain high performance in large solutions, the analyzer uses a thread-safe
 ---
 
 ## 5. Diagnostics & UX
-* **Diagnostic ID:** `SG001` (Unauthorized Access).
-* **Error Message:** *"Member '{0}' is available to '{1}', but is being accessed by '{2}'. Access denied by ScopeGuard."*
+* **Diagnostic ID:** `VT001` (Unauthorized Access).
+* **Error Message:** *"Member '{0}' is available to '{1}', but is being accessed by '{2}'. Access denied by VisibleTo."*
 * **Severity:** Error.

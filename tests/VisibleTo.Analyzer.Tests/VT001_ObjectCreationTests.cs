@@ -1,13 +1,13 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_ObjectCreationTests
+public class VT001_ObjectCreationTests
 {
     private const string Preamble = """
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
         using System.Collections.Generic;
 
         namespace MyApp.Domain
@@ -34,8 +34,8 @@ public class SG001_ObjectCreationTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        var vt001 = Assert.Single(diagnostics, d => d.Id == "VT001");
+        Assert.Contains("Entity", vt001.GetMessage());
     }
 
     [Fact]
@@ -99,8 +99,8 @@ public class SG001_ObjectCreationTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        var vt001 = Assert.Single(diagnostics, d => d.Id == "VT001");
+        Assert.Contains("Entity", vt001.GetMessage());
     }
 
     [Fact]
@@ -138,8 +138,8 @@ public class SG001_ObjectCreationTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        var vt001 = Assert.Single(diagnostics, d => d.Id == "VT001");
+        Assert.Contains("Entity", vt001.GetMessage());
     }
 
     [Fact]
@@ -177,8 +177,8 @@ public class SG001_ObjectCreationTests
             }
             """;
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        var sg001 = Assert.Single(diagnostics, d => d.Id == "SG001");
-        Assert.Contains("Entity", sg001.GetMessage());
+        var vt001 = Assert.Single(diagnostics, d => d.Id == "VT001");
+        Assert.Contains("Entity", vt001.GetMessage());
     }
 
     [Fact]

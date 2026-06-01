@@ -1,4 +1,4 @@
-# ScopeGuard
+# VisibleTo
 
 A Roslyn-based analyzer that enforces architectural boundaries at compile time.
 
@@ -18,10 +18,10 @@ The type is `public` because it has to be. But it was never meant to be used her
 
 ## The Solution
 
-ScopeGuard introduces a `[VisibleTo]` attribute that lets you declare which namespaces are allowed to use a type. Any violation becomes a **compile-time error** — not a code review comment, not a runtime exception, a build failure.
+VisibleTo introduces a `[VisibleTo]` attribute that lets you declare which namespaces are allowed to use a type. Any violation becomes a **compile-time error** — not a code review comment, not a runtime exception, a build failure.
 
 ```csharp
-using ScopeGuard.Attributes;
+using VisibleTo.Attributes;
 
 namespace MyApp.Domain
 {
@@ -37,22 +37,22 @@ Any of the following from an unauthorized namespace now fails to build:
 
 ```csharp
 // In MyApp.UI.Controllers
-var user = new User();                         // error SG001 — object creation
-var hash = user.PasswordHash;                  // error SG001 — member access
+var user = new User();                         // error VT001 — object creation
+var hash = user.PasswordHash;                  // error VT001 — member access
 ```
 
 ```csharp
 // In MyApp.UI
-class AdminUser : User { }                     // error SG001 — inheritance
-class UserList : IEnumerable<User> { }         // error SG001 — generic type argument
-void Handle(User user) { }                     // error SG001 — method parameter
-User GetCurrent() => null!;                    // error SG001 — return type
-private User _current;                         // error SG001 — field type
+class AdminUser : User { }                     // error VT001 — inheritance
+class UserList : IEnumerable<User> { }         // error VT001 — generic type argument
+void Handle(User user) { }                     // error VT001 — method parameter
+User GetCurrent() => null!;                    // error VT001 — return type
+private User _current;                         // error VT001 — field type
 ```
 
 ## What Is Checked
 
-ScopeGuard catches every place a restricted type appears:
+VisibleTo catches every place a restricted type appears:
 
 - **Member access** — calling a method, reading or writing a property or field on a restricted type
 - **Object creation** — `new RestrictedType()`
@@ -90,4 +90,4 @@ public class Order { ... }
 
 | ID | Severity | Message |
 |----|----------|---------|
-| SG001 | Error | Member `'{0}'` is available to `'{1}'`, but is being accessed by `'{2}'`. Access denied by ScopeGuard. |
+| VT001 | Error | Member `'{0}'` is available to `'{1}'`, but is being accessed by `'{2}'`. Access denied by VisibleTo. |

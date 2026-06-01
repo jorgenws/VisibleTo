@@ -1,13 +1,13 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_EventDeclarationTests
+public class VT001_EventDeclarationTests
 {
     private const string EntityDef = """
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
 
         namespace MyApp.Domain
         {
@@ -31,10 +31,10 @@ public class SG001_EventDeclarationTests
                 }
             }
             """;
-        // EntityChanged delegate fires SG001 for its parameter type,
-        // EventSource.OnChanged fires SG001 for its event type.
+        // EntityChanged delegate fires vt001 for its parameter type,
+        // EventSource.OnChanged fires vt001 for its event type.
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("Entity"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("Entity"));
     }
 
     [Fact]

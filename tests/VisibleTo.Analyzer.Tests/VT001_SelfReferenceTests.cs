@@ -1,16 +1,16 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_SelfReferenceTests
+public class VT001_SelfReferenceTests
 {
     [Fact]
     public async Task AccessingOwnMembers_NoDiagnostic()
     {
         var source = """
-            using ScopeGuard.Attributes;
+            using VisibleTo.Attributes;
 
             namespace MyApp.Domain
             {
@@ -34,7 +34,7 @@ public class SG001_SelfReferenceTests
     public async Task ReturningOwnType_NoDiagnostic()
     {
         var source = """
-            using ScopeGuard.Attributes;
+            using VisibleTo.Attributes;
 
             namespace MyApp.Domain
             {
@@ -53,7 +53,7 @@ public class SG001_SelfReferenceTests
     public async Task AcceptingOwnTypeAsParameter_NoDiagnostic()
     {
         var source = """
-            using ScopeGuard.Attributes;
+            using VisibleTo.Attributes;
 
             namespace MyApp.Domain
             {

@@ -5,4 +5,4 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
-SG001 | Architecture | Error | Unauthorized Member Access
+VT001 | Architecture | Error | Unauthorized Member Access

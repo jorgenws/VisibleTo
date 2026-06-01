@@ -1,13 +1,13 @@
-namespace ScopeGuard.Analyzer.Tests;
+namespace VisibleTo.Analyzer.Tests;
 
-using ScopeGuard.Analyzer.Tests.Helpers;
+using VisibleTo.Analyzer.Tests.Helpers;
 using System.Threading.Tasks;
 using Xunit;
 
-public class SG001_CrossNamespaceTests
+public class VT001_CrossNamespaceTests
 {
     private const string Source = """
-        using ScopeGuard.Attributes;
+        using VisibleTo.Attributes;
 
         namespace ScopeGuardTest
         {
@@ -38,7 +38,7 @@ public class SG001_CrossNamespaceTests
         // ScopeGuardBackend matches ScopeGuardBackend.** — no error
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source);
         Assert.DoesNotContain(diagnostics, d =>
-            d.Id == "SG001" && d.GetMessage().Contains("ScopeGuardBackend.Class1"));
+            d.Id == "VT001" && d.GetMessage().Contains("ScopeGuardBackend.Class1"));
     }
 
     [Fact]
@@ -46,6 +46,6 @@ public class SG001_CrossNamespaceTests
     {
         // ScopeGuardFrontend does not match ScopeGuardBackend.** — error
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source);
-        Assert.Contains(diagnostics, d => d.Id == "SG001" && d.GetMessage().Contains("ScopeGuardFrontend"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("ScopeGuardFrontend"));
     }
 }

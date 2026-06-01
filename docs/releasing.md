@@ -11,7 +11,7 @@ This triggers the `publish.yml` GitHub Actions workflow, which:
 
 1. Runs all tests
 2. Extracts the version number from the tag (strips the leading `v`)
-3. Packs `ScopeGuard.Analyzer.csproj` with that version into a `.nupkg`
+3. Packs `VisibleTo.Analyzer.csproj` with that version into a `.nupkg`
 4. Pushes the package to NuGet.org using the `NUGETAPIKEY` repository secret
 
-The published package is `ScopeGuard` — a single package that bundles both the Roslyn analyzer (`analyzers/dotnet/cs/`) and the `[AvailableTo]` attribute (`lib/netstandard2.0/`).
+The published package is `VisibleTo.Analyzer` — a single package that bundles both the Roslyn analyzer (`analyzers/dotnet/cs/`) and the `[VisibleTo]` attribute (`lib/netstandard2.0/`).
