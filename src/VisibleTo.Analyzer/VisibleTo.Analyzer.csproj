@@ -3,22 +3,22 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <AssemblyName>ScopeGuard.Analyzer</AssemblyName>
-    <RootNamespace>ScopeGuard.Analyzer</RootNamespace>
+    <AssemblyName>VisibleTo.Analyzer</AssemblyName>
+    <RootNamespace>VisibleTo.Analyzer</RootNamespace>
     <IsRoslynComponent>true</IsRoslynComponent>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <PackageId>ScopeGuard</PackageId>
+    <PackageId>VisibleTo.Analyzer</PackageId>
     <Authors>jorgenws</Authors>
     <Description>A Roslyn analyzer that enforces architectural boundaries at compile time using the [VisibleTo] attribute.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/jorgenws/ScopeGuard</RepositoryUrl>
+    <RepositoryUrl>https://github.com/jorgenws/VisibleTo</RepositoryUrl>
     <PackageTags>roslyn;analyzer;architecture;clean-architecture</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <IncludeBuildOutput>false</IncludeBuildOutput>
   </PropertyGroup>
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
-      <_Parameter1>ScopeGuard.Analyzer.Tests</_Parameter1>
+      <_Parameter1>VisibleTo.Analyzer.Tests</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
@@ -26,14 +26,14 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.3.0" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ScopeGuard.Attributes\ScopeGuard.Attributes.csproj">
+    <ProjectReference Include="..\VisibleTo.Attributes\VisibleTo.Attributes.csproj">
       <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(OutputPath)$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-    <None Include="$(OutputPath)ScopeGuard.Attributes.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
-    <None Include="build\ScopeGuard.props" Pack="true" PackagePath="build\ScopeGuard.props" Visible="false" />
-<None Include="../../README.md" Pack="true" PackagePath="\" Visible="false" />
+    <None Include="$(OutputPath)VisibleTo.Attributes.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="false" />
+    <None Include="build\VisibleTo.props" Pack="true" PackagePath="build\VisibleTo.props" Visible="false" />
+    <None Include="../../README.md" Pack="true" PackagePath="\" Visible="false" />
   </ItemGroup>
 </Project>

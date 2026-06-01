@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VisibleTo.Analyzer/VisibleTo.Analyzer.csproj" />
+    <Project Path="src/VisibleTo.Attributes/VisibleTo.Attributes.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VisibleTo.Analyzer.Tests/VisibleTo.Analyzer.Tests.csproj" />
+  </Folder>
+</Solution>
