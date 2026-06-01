@@ -18,7 +18,7 @@ public class VT001_EnumTests
         """;
 
     [Fact]
-    public async Task EnumMemberAccess_FromDeniedNamespace_RaisesSG001()
+    public async Task EnumMemberAccess_FromDeniedNamespace_RaisesVT001()
     {
         var source = EnumDef + """
             namespace MyApp.UI
@@ -56,7 +56,7 @@ public class VT001_EnumTests
     }
 
     [Fact]
-    public async Task EnumAsFieldType_FromDeniedNamespace_RaisesSG001()
+    public async Task EnumAsFieldType_FromDeniedNamespace_RaisesVT001()
     {
         var source = EnumDef + """
             namespace MyApp.UI
@@ -88,7 +88,7 @@ public class VT001_EnumTests
     }
 
     [Fact]
-    public async Task EnumAsMethodParameter_FromDeniedNamespace_RaisesSG001()
+    public async Task EnumAsMethodParameter_FromDeniedNamespace_RaisesVT001()
     {
         var source = EnumDef + """
             namespace MyApp.UI

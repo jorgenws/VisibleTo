@@ -18,7 +18,7 @@ public class VT001_DelegateSignatureTests
         """;
 
     [Fact]
-    public async Task Delegate_Parameter_Denied_RaisesSG001()
+    public async Task Delegate_Parameter_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI
@@ -45,7 +45,7 @@ public class VT001_DelegateSignatureTests
     }
 
     [Fact]
-    public async Task Delegate_ReturnType_Denied_RaisesSG001()
+    public async Task Delegate_ReturnType_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI

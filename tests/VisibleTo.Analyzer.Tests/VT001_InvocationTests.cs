@@ -77,7 +77,7 @@ public class VT001_InvocationTests
     [Theory]
     [InlineData("MyApp.Domain", "MyApp.Application.**", "MyApp.UI")]
     [InlineData("MyApp.Domain", "MyApp.Application", "MyApp.UI")]
-    public async Task Denied_RaisesSG001(string targetNs, string pattern, string callerNs)
+    public async Task Denied_RaisesVT001(string targetNs, string pattern, string callerNs)
     {
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source(targetNs, callerNs, pattern));
         Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("Service"));

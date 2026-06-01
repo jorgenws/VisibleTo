@@ -29,7 +29,7 @@ public class VT001_RecordTests
         """;
 
     [Fact]
-    public async Task Record_AccessFromDeniedNamespace_RaisesSG001()
+    public async Task Record_AccessFromDeniedNamespace_RaisesVT001()
     {
         var source = RecordDef + """
             namespace MyApp.UI
@@ -67,7 +67,7 @@ public class VT001_RecordTests
     }
 
     [Fact]
-    public async Task Record_InMethodSignature_Denied_RaisesSG001()
+    public async Task Record_InMethodSignature_Denied_RaisesVT001()
     {
         var source = RecordDef + """
             namespace MyApp.UI
@@ -99,7 +99,7 @@ public class VT001_RecordTests
     }
 
     [Fact]
-    public async Task RecordStruct_AccessFromDeniedNamespace_RaisesSG001()
+    public async Task RecordStruct_AccessFromDeniedNamespace_RaisesVT001()
     {
         var source = RecordStructDef + """
             namespace MyApp.UI

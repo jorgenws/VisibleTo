@@ -35,7 +35,7 @@ public class VT001_PropertyReferenceTests
     [Theory]
     [InlineData("MyApp.Domain", "MyApp.Application", "MyApp.UI", "_ = e.Name;")]
     [InlineData("MyApp.Domain", "MyApp.Application", "MyApp.UI", "e.Name = \"x\";")]
-    public async Task PropertyAccess_Denied_RaisesSG001(string targetNs, string pattern, string callerNs, string access)
+    public async Task PropertyAccess_Denied_RaisesVT001(string targetNs, string pattern, string callerNs, string access)
     {
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(ClassLevelSource(targetNs, callerNs, pattern, access));
         Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("Entity"));

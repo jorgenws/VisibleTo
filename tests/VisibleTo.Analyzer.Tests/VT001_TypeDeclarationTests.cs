@@ -19,7 +19,7 @@ public class VT001_TypeDeclarationTests
         """;
 
     [Fact]
-    public async Task InterfaceGenericTypeArgument_Denied_RaisesSG001()
+    public async Task InterfaceGenericTypeArgument_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             using System.Collections.Generic;
@@ -78,7 +78,7 @@ public class VT001_TypeDeclarationTests
     }
 
     [Fact]
-    public async Task BaseClassGenericTypeArgument_Denied_RaisesSG001()
+    public async Task BaseClassGenericTypeArgument_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.Domain
@@ -115,7 +115,7 @@ public class VT001_TypeDeclarationTests
     }
 
     [Fact]
-    public async Task NestedGenericTypeArgument_Denied_RaisesSG001()
+    public async Task NestedGenericTypeArgument_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.Domain
@@ -156,7 +156,7 @@ public class VT001_TypeDeclarationTests
     }
 
     [Fact]
-    public async Task DirectBaseClass_Denied_RaisesSG001()
+    public async Task DirectBaseClass_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI

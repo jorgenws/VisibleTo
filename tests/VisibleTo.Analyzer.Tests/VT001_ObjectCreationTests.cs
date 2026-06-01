@@ -19,7 +19,7 @@ public class VT001_ObjectCreationTests
         """;
 
     [Fact]
-    public async Task ObjectCreation_GenericTypeArgument_Denied_RaisesSG001()
+    public async Task ObjectCreation_GenericTypeArgument_Denied_RaisesVT001()
     {
         var source = Preamble + """
             namespace MyApp.UI
@@ -84,7 +84,7 @@ public class VT001_ObjectCreationTests
     }
 
     [Fact]
-    public async Task ObjectCreation_MultipleTypeArguments_OnlyRestrictedRaisesSG001()
+    public async Task ObjectCreation_MultipleTypeArguments_OnlyRestrictedRaisesVT001()
     {
         var source = Preamble + """
             namespace MyApp.UI
@@ -123,7 +123,7 @@ public class VT001_ObjectCreationTests
     }
 
     [Fact]
-    public async Task ObjectCreation_NestedGenericTypeArgument_Denied_RaisesSG001()
+    public async Task ObjectCreation_NestedGenericTypeArgument_Denied_RaisesVT001()
     {
         var source = Preamble + """
             namespace MyApp.UI
@@ -162,7 +162,7 @@ public class VT001_ObjectCreationTests
     }
 
     [Fact]
-    public async Task ObjectCreation_DirectOfRestrictedType_Denied_RaisesSG001()
+    public async Task ObjectCreation_DirectOfRestrictedType_Denied_RaisesVT001()
     {
         var source = Preamble + """
             namespace MyApp.UI

@@ -9,25 +9,25 @@ public class VT001_CrossNamespaceTests
     private const string Source = """
         using VisibleTo.Attributes;
 
-        namespace ScopeGuardTest
+        namespace VisibleToTest
         {
-            [VisibleTo("ScopeGuardBackend.**")]
+            [VisibleTo("VisibleToBackend.**")]
             public class TestClass { }
         }
 
-        namespace ScopeGuardBackend
+        namespace VisibleToBackend
         {
             public class Class1
             {
-                public Class1() { var x = new ScopeGuardTest.TestClass(); }
+                public Class1() { var x = new VisibleToTest.TestClass(); }
             }
         }
 
-        namespace ScopeGuardFrontend
+        namespace VisibleToFrontend
         {
             public class Class2
             {
-                public Class2() { var y = new ScopeGuardTest.TestClass(); }
+                public Class2() { var y = new VisibleToTest.TestClass(); }
             }
         }
         """;
@@ -35,17 +35,17 @@ public class VT001_CrossNamespaceTests
     [Fact]
     public async Task AllowedNamespace_NoDiagnostic()
     {
-        // ScopeGuardBackend matches ScopeGuardBackend.** — no error
+        // VisibleToBackend matches VisibleToBackend.** — no error
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source);
         Assert.DoesNotContain(diagnostics, d =>
-            d.Id == "VT001" && d.GetMessage().Contains("ScopeGuardBackend.Class1"));
+            d.Id == "VT001" && d.GetMessage().Contains("VisibleToBackend.Class1"));
     }
 
     [Fact]
-    public async Task DeniedNamespace_RaisesSG001()
+    public async Task DeniedNamespace_RaisesVT001()
     {
-        // ScopeGuardFrontend does not match ScopeGuardBackend.** — error
+        // VisibleToFrontend does not match VisibleToBackend.** — error
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(Source);
-        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("ScopeGuardFrontend"));
+        Assert.Contains(diagnostics, d => d.Id == "VT001" && d.GetMessage().Contains("VisibleToFrontend"));
     }
 }

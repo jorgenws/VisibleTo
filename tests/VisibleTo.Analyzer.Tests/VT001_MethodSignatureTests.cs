@@ -18,7 +18,7 @@ public class VT001_MethodSignatureTests
         """;
 
     [Fact]
-    public async Task MethodParameter_Denied_RaisesSG001()
+    public async Task MethodParameter_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI
@@ -51,7 +51,7 @@ public class VT001_MethodSignatureTests
     }
 
     [Fact]
-    public async Task MethodReturnType_Denied_RaisesSG001()
+    public async Task MethodReturnType_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI
@@ -84,7 +84,7 @@ public class VT001_MethodSignatureTests
     }
 
     [Fact]
-    public async Task Constructor_Parameter_Denied_RaisesSG001()
+    public async Task Constructor_Parameter_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI
@@ -117,7 +117,7 @@ public class VT001_MethodSignatureTests
     }
 
     [Fact]
-    public async Task GenericParameter_RestrictedTypeArg_Denied_RaisesSG001()
+    public async Task GenericParameter_RestrictedTypeArg_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI

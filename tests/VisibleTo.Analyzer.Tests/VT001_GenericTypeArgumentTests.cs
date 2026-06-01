@@ -35,7 +35,7 @@ public class VT001_GenericTypeArgumentTests
         """;
 
     [Fact]
-    public async Task GenericTypeArgument_Denied_RaisesSG001()
+    public async Task GenericTypeArgument_Denied_RaisesVT001()
     {
         var source = Source("MyApp.Domain", "MyApp.UI", "MyApp.Application", "repo.Get<MyApp.Domain.Entity>();");
         var diagnostics = await AnalyzerVerifier.GetDiagnosticsAsync(source);
@@ -84,7 +84,7 @@ public class VT001_GenericTypeArgumentTests
     }
 
     [Fact]
-    public async Task NestedGenericTypeArgument_Denied_RaisesSG001()
+    public async Task NestedGenericTypeArgument_Denied_RaisesVT001()
     {
         var source = """
             using VisibleTo.Attributes;

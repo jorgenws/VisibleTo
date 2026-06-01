@@ -18,7 +18,7 @@ public class VT001_FieldDeclarationTests
         """;
 
     [Fact]
-    public async Task Field_Denied_RaisesSG001()
+    public async Task Field_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             namespace MyApp.UI
@@ -51,7 +51,7 @@ public class VT001_FieldDeclarationTests
     }
 
     [Fact]
-    public async Task Field_GenericTypeArg_Denied_RaisesSG001()
+    public async Task Field_GenericTypeArg_Denied_RaisesVT001()
     {
         var source = EntityDef + """
             using System.Collections.Generic;
